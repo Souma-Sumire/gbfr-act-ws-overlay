@@ -6,3 +6,12 @@
 
 - `pnpm i`
 - `pnpm dev`
+
+## params
+
+url可传参 `theme=[dark|white]` 切换主题，默认为dark
+
+### e.g
+
+- `https://souma-sumire.github.io/gbft-act-ws-overlay` - 默认黑色模式
+- `https://souma-sumire.github.io/gbft-act-ws-overlay?theme=white` - 设置为白色模式
