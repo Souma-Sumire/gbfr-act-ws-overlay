@@ -42,57 +42,6 @@ onMounted(() => {
     maxCombats: 10,
   });
 
-  gbfrActWs.on("combat_data", (data): void => {
-    const maxDamage = data.actors.reduce(
-      (max, actor) => (max > actor.damage ? max : actor.damage),
-      0
-    );
-    chartBox.setOption<echarts.EChartsOption>({
-      grid: {
-        right: maxDamage.toString().length * 8 + 10,
-      },
-      title: {
-        text: `${data.duration.MMSS} - 小队秒伤：${Math.round(
-          data.partyDamage / data.duration.seconds
-        ).toLocaleString()}`,
-      },
-      yAxis: {
-        data: data.actors.map((v) => {
-          let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
-          if (
-            data.actors.find(
-              (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId
-            )
-          ) {
-            const index = `${v.partyIdx + 1}`;
-            return `[${index}]${name}`;
-          }
-          return name;
-        }),
-      },
-      series: [
-        {
-          data: data.actors.map((v) => ({
-            value: v.damage,
-          })),
-          label: {
-            show: true,
-          },
-          itemStyle: {
-            color: (params: any) => {
-              try {
-                const hexId = data.actors[params!.dataIndex].hexId;
-                return actorConfigMap.get(hexId)?.color ?? "";
-              } catch {
-                return "";
-              }
-            },
-          },
-        },
-      ],
-    });
-  });
-
   const chartBox = echarts.init(
     echartsDom.value,
     theme === "dark" ? "dark" : null,
@@ -134,7 +83,6 @@ onMounted(() => {
       },
       axisLabel: {
         color: theme === "dark" ? "white" : "black",
-        width: 50,
         fontWeight: "normal",
         overflow: "break",
       },
@@ -165,6 +113,80 @@ onMounted(() => {
     animationEasingUpdate: "linear",
   };
   chartBox.setOption(option);
+
+  let lastActorLength = 1;
+
+  gbfrActWs.on("combat_data", (data): void => {
+    const names = data.actors.map((v) => {
+      let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
+      if (
+        data.actors.find(
+          (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId
+        )
+      ) {
+        const index = `${v.partyIdx + 1}`;
+        return `[${index}]${name}`;
+      }
+      return name;
+    });
+
+    const longestName = names.reduce(
+      (max, name) => Math.max(name.length, max),
+      0
+    );
+    const longestDamage = data.actors
+      .reduce((max, actor) => (max > actor.damage ? max : actor.damage), 0)
+      .toString().length;
+
+    const leftSize = longestName * 14 + 5;
+    const rightSize = longestDamage * 8 + 10;
+
+    // charts bug? When the length of new data is less than the length of old data, the repeated player names are displayed as null values on the y-axis of the chart.
+    if (lastActorLength > data.actors.length) {
+      chartBox.setOption<echarts.EChartsOption>(
+        { yAxis: option.yAxis, series: option.series },
+        {
+          replaceMerge: ["yAxis", "series"],
+        }
+      );
+    }
+    lastActorLength = data.actors.length;
+
+    chartBox.setOption<echarts.EChartsOption>({
+      grid: {
+        left:leftSize,
+        right: rightSize,
+      },
+      title: {
+        text: `${data.duration.MMSS} - 小队秒伤：${Math.round(
+          data.partyDamage / data.duration.seconds
+        ).toLocaleString()}`,
+      },
+      yAxis: {
+        data: names,
+      },
+      series: [
+        {
+          data: data.actors.map((v) => ({
+            value: v.damage,
+          })),
+          label: {
+            show: true,
+          },
+          itemStyle: {
+            color: (params: any) => {
+              try {
+                const hexId = data.actors[params!.dataIndex].hexId;
+                return actorConfigMap.get(hexId)?.color ?? "";
+              } catch {
+                return "";
+              }
+            },
+          },
+        },
+      ],
+    });
+  });
 
   window.addEventListener("resize", function () {
     chartBox.resize();
