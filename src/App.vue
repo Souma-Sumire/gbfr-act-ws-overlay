@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
-import { onMounted, ref } from "vue";
 import { GbfrActWs } from "gbfr-act-ws-package";
+import { onMounted, ref } from "vue";
 
 const echartsDom = ref();
 
@@ -49,7 +49,7 @@ onMounted(() => {
       renderer: "svg",
       useDirtyRect: true,
       locale: "ZH",
-    }
+    },
   );
 
   const option: echarts.EChartsOption = {
@@ -121,7 +121,7 @@ onMounted(() => {
       let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
       if (
         data.actors.find(
-          (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId
+          (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId,
         )
       ) {
         const index = `${v.partyIdx + 1}`;
@@ -132,7 +132,7 @@ onMounted(() => {
 
     const longestName = names.reduce(
       (max, name) => Math.max(name.length, max),
-      0
+      0,
     );
     const longestDamage = data.actors
       .reduce((max, actor) => (max > actor.damage ? max : actor.damage), 0)
@@ -147,20 +147,22 @@ onMounted(() => {
         { yAxis: option.yAxis, series: option.series },
         {
           replaceMerge: ["yAxis", "series"],
-        }
+        },
       );
     }
     lastActorLength = data.actors.length;
 
     chartBox.setOption<echarts.EChartsOption>({
       grid: {
-        left:leftSize,
+        left: leftSize,
         right: rightSize,
       },
       title: {
-        text: `${data.duration.MMSS} - 小队秒伤：${Math.round(
-          data.partyDamage / data.duration.seconds
-        ).toLocaleString()}`,
+        text: `${data.duration.MMSS} - 小队秒伤：${
+          Math.round(
+            data.partyDamage / data.duration.seconds,
+          ).toLocaleString()
+        }`,
       },
       yAxis: {
         data: names,
@@ -187,8 +189,7 @@ onMounted(() => {
       ],
     });
   });
-
-  window.addEventListener("resize", function () {
+  window.addEventListener("resize", function() {
     chartBox.resize();
   });
 });
