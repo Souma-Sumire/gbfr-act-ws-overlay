@@ -38,6 +38,7 @@ const actorConfigMap = new Map([
 
 const style = {
   bleed: 8,
+  backgroundColor: theme === "dark" ? "rgba(0,0,0,0.5)" : "white",
   names: {
     color: theme === "dark" ? "white" : "black",
     fontSize: "12px",
@@ -71,7 +72,7 @@ onMounted(() => {
   );
 
   const option: echarts.EChartsOption = {
-    backgroundColor: theme === "dark" ? "rgba(0,0,0,0.5)" : undefined,
+    backgroundColor: style.backgroundColor,
     grid: {
       top: showTitle ? 25 : 5,
       bottom: 5,
