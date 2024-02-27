@@ -1,25 +1,25 @@
 # gbfr-act-ws-overlay
 
-[GBFR-ACT](https://github.com/nyaoouo/GBFR-ACT) 的自用简易悬浮窗
+[English](./README.en-US.md) | [简体中文](./README.md)
 
-## dev
+## 说明
 
-- `pnpm i`
-- `pnpm dev`
+基于 [GBFR-ACT](https://github.com/nyaoouo/GBFR-ACT) 的个人悬浮窗
 
-## params
+## 开发
 
-url可传参 `theme=[dark|white]` 切换主题，默认为dark
+- 运行 `pnpm i` 安装依赖
+- 运行 `pnpm dev` 启动开发服务器
 
-在ACT用建议黑色模式。
+### 页面
 
-浏览器用建议白色模式。
+访问链接: [https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1](https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1)
 
-### e.g
+### 参数
 
-- `https://souma-sumire.github.io/gbft-act-ws-overlay` - 默认黑色模式
-- `https://souma-sumire.github.io/gbft-act-ws-overlay?theme=white` - 设置为白色模式
+- `theme`：`dark|white`，默认为 `dark`
+- `title`：`1|0`，显示标题（战斗时长与总团伤），默认为 `1`
 
-## TODO
+### 待办事项
 
-- [ ] 点击bar查看细节
+- [ ] 实现点击 bar 查看细节功能
