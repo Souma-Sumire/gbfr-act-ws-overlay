@@ -6,6 +6,8 @@ import { onMounted, ref } from "vue";
 const echartsDom = ref();
 
 const params = new URLSearchParams(window.location.search);
+const valTrue = ["true", "1"];
+const showTitle = valTrue.includes(params.get("title") || "true");
 const theme = params.get("theme") || "dark";
 
 const rgb = (r: number, g: number, b: number) => `rgb(${r}, ${g}, ${b})`;
@@ -71,8 +73,8 @@ onMounted(() => {
   const option: echarts.EChartsOption = {
     backgroundColor: theme === "dark" ? "rgba(0,0,0,0.5)" : undefined,
     grid: {
-      top: "24",
-      bottom: "5",
+      top: showTitle ? 25 : 5,
+      bottom: 5,
     },
     xAxis: {
       max: "dataMax",
@@ -176,6 +178,7 @@ onMounted(() => {
     chartBox.setOption<echarts.EChartsOption>({
       grid: { right },
       title: {
+        show: showTitle,
         text: `${data.duration.MMSS} - 小队秒伤：${
           Math.round(
             data.partyDamage / data.duration.seconds,
