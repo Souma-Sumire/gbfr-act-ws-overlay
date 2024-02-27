@@ -13,7 +13,7 @@ A personalized overlay based on [GBFR-ACT](https://github.com/nyaoouo/GBFR-ACT).
 
 ### Pages
 
-Visit link: [https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1](https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1)
+Visit link: [https://souma-sumire.github.io/gbfr-act-ws-overlay?theme=dark&title=1](https://souma-sumire.github.io/gbfr-act-ws-overlay?theme=dark&title=1)
 
 ### Parameters
 

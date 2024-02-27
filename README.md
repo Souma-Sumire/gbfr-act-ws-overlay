@@ -13,7 +13,7 @@
 
 ### 页面
 
-访问链接: [https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1](https://souma-sumire.github.io/gbft-act-ws-overlay?theme=dark&title=1)
+访问链接: [https://souma-sumire.github.io/gbfr-act-ws-overlay?theme=dark&title=1](https://souma-sumire.github.io/gbfr-act-ws-overlay?theme=dark&title=1)
 
 ### 参数
 
