@@ -150,7 +150,7 @@ onMounted(() => {
     return { width: span.offsetWidth, height: span.offsetHeight };
   };
 
-  gbfrActWs.on("combat_data", (data): void => {
+  gbfrActWs.on("combatData", (data): void => {
     // update yAxis
     if (lastActorNames !== data.actors.join("/")) {
       const names = data.actors.map((v) => {

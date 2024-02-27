@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "echarts": "^5.5.0",
-    "gbfr-act-ws-package": "^1.0.5",
+    "gbfr-act-ws-package": "^2.0.1",
     "vue": "^3.4.20"
   },
   "devDependencies": {
