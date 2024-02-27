@@ -34,6 +34,22 @@ const actorConfigMap = new Map([
   ["121d9d67", { name: "奥义连锁", color: "#444" }],
 ]);
 
+const style = {
+  bleed: 8,
+  names: {
+    color: theme === "dark" ? "white" : "black",
+    fontSize: "12px",
+    fontFamily: "Microsoft YaHei",
+    margin: 8,
+  },
+  damages: {
+    color: theme === "dark" ? undefined : "gray",
+    fontSize: "12px",
+    fontFamily: "Microsoft YaHei",
+    distance: 5,
+  },
+};
+
 onMounted(() => {
   const gbfrActWs = new GbfrActWs({
     port: 24399,
@@ -55,8 +71,7 @@ onMounted(() => {
   const option: echarts.EChartsOption = {
     backgroundColor: theme === "dark" ? "rgba(0,0,0,0.5)" : undefined,
     grid: {
-      left: "60",
-      top: "25",
+      top: "24",
       bottom: "5",
     },
     xAxis: {
@@ -82,9 +97,13 @@ onMounted(() => {
         show: false,
       },
       axisLabel: {
-        color: theme === "dark" ? "white" : "black",
+        show: true,
         fontWeight: "normal",
         overflow: "break",
+        color: style.names.color,
+        fontSize: parseInt(style.names.fontSize),
+        fontFamily: style.names.fontFamily,
+        margin: style.names.margin,
       },
       animationDuration: 0,
       animationDurationUpdate: 300,
@@ -100,7 +119,10 @@ onMounted(() => {
           formatter: (params: any): string => params.value.toLocaleString(),
           textBorderWidth: 1,
           textBorderType: "solid",
-          fontSize: 12,
+          color: style.damages.color,
+          fontSize: parseInt(style.damages.fontSize),
+          fontFamily: style.damages.fontFamily,
+          distance: style.damages.distance,
         },
       },
     ],
@@ -114,58 +136,51 @@ onMounted(() => {
   };
   chartBox.setOption(option);
 
-  let lastActorLength = 1;
+  let lastActorNames = "";
+
+  const getTextSize = (text: string, font: { fontSize: string; fontFamily: string }) => {
+    const span = document.getElementById("textSize");
+    if (!span) return { width: 0, height: 0 };
+    span.style.fontSize = font.fontSize;
+    span.style.fontFamily = font.fontFamily;
+    span.textContent = text;
+    return { width: span.offsetWidth, height: span.offsetHeight };
+  };
 
   gbfrActWs.on("combat_data", (data): void => {
-    const names = data.actors.map((v) => {
-      let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
-      if (
-        data.actors.find(
-          (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId,
-        )
-      ) {
-        const index = `${v.partyIdx + 1}`;
-        return `[${index}]${name}`;
-      }
-      return name;
-    });
-
-    const longestName = names.reduce(
-      (max, name) => Math.max(name.length, max),
-      0,
-    );
-    const longestDamage = data.actors
-      .reduce((max, actor) => (max > actor.damage ? max : actor.damage), 0)
-      .toString().length;
-
-    const leftSize = longestName * 14 + 5;
-    const rightSize = longestDamage * 8 + 10;
-
-    // charts bug? When the length of new data is less than the length of old data, the repeated player names are displayed as null values on the y-axis of the chart.
-    if (lastActorLength > data.actors.length) {
-      chartBox.setOption<echarts.EChartsOption>(
-        { yAxis: option.yAxis, series: option.series },
-        {
-          replaceMerge: ["yAxis", "series"],
-        },
-      );
+    // update yAxis
+    if (lastActorNames !== data.actors.join("/")) {
+      const names = data.actors.map((v) => {
+        let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
+        if (
+          data.actors.find(
+            (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId,
+          )
+        ) {
+          const index = `${v.partyIdx + 1}`;
+          return `[${index}]${name}`;
+        }
+        return name;
+      });
+      const left = style.names.margin + style.bleed
+        + names.reduce((max, name) => Math.max(getTextSize(name, style.names).width, max), 0);
+      chartBox.setOption<echarts.EChartsOption>({ grid: { left }, yAxis: { data: names } });
     }
-    lastActorLength = data.actors.length;
+
+    lastActorNames = data.actors.join("/");
+
+    const right = style.damages.distance + style.bleed
+      + getTextSize(data.actors.reduce((max, actor) => Math.max(max, actor.damage), 0).toLocaleString(), style.damages)
+        .width;
 
     chartBox.setOption<echarts.EChartsOption>({
-      grid: {
-        left: leftSize,
-        right: rightSize,
-      },
+      grid: { right },
       title: {
         text: `${data.duration.MMSS} - 小队秒伤：${
           Math.round(
             data.partyDamage / data.duration.seconds,
           ).toLocaleString()
         }`,
-      },
-      yAxis: {
-        data: names,
       },
       series: [
         {
@@ -197,11 +212,19 @@ onMounted(() => {
 
 <template>
   <div ref="echartsDom" class="echarts"></div>
+  <span id="textSize"></span>
 </template>
 
 <style scoped>
 .echarts {
   width: 100vw;
   height: 100vh;
+}
+
+#textSize {
+  visibility: hidden;
+  white-space: nowrap;
+  position: absolute;
+  top: -9999px;
 }
 </style>
