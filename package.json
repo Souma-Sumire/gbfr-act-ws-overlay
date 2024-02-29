@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "echarts": "^5.5.0",
-    "gbfr-act-ws-package": "^2.0.1",
-    "vue": "^3.4.20"
+    "gbfr-act-ws-package": "^2.1.4",
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.1.0",
