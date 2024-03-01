@@ -12,28 +12,27 @@ const theme = params.get("theme") || "dark";
 
 const rgb = (r: number, g: number, b: number) => `rgb(${r}, ${g}, ${b})`;
 
-const actorConfigMap = new Map([
-  ["9498420d", { name: "姬塔", color: rgb(117, 117, 117) }],
-  ["26a4848a", { name: "古兰", color: rgb(117, 117, 117) }],
-  ["c3155079", { name: "塞达", color: rgb(46, 125, 50) }],
-  ["34d4fd8f", { name: "卡塔莉娜", color: rgb(63, 81, 181) }],
-  ["f8d73d33", { name: "拉卡姆", color: rgb(158, 157, 36) }],
-  ["7b5934ad", { name: "伊欧", color: rgb(126, 87, 194) }],
-  ["443d46bb", { name: "欧根", color: rgb(153, 23, 23) }],
-  ["a9d6569e", { name: "萝赛塔", color: rgb(121, 85, 72) }],
-  ["2b4aa114", { name: "夏洛特", color: rgb(254, 179, 0) }],
-  ["bcc238de", { name: "冈达葛萨", color: rgb(136, 14, 79) }],
-  ["fba6615d", { name: "菲莉", color: rgb(121, 134, 203) }],
-  ["601aa977", { name: "娜露梅", color: rgb(244, 143, 177) }],
-  ["63a7c3f0", { name: "兰斯洛特", color: rgb(0, 151, 167) }],
-  ["f96a90c2", { name: "巴恩", color: rgb(255, 152, 0) }],
-  ["28ac1108", { name: "珀西瓦尔", color: rgb(233, 30, 99) }],
-  ["94e2514e", { name: "齐格飞", color: rgb(0, 185, 247) }],
-  ["6fdd6932", { name: "卡莉奥丝特罗", color: rgb(255, 202, 40) }],
-  ["c97f3365", { name: "尤达拉哈", color: rgb(79, 195, 247) }],
-  ["d16cfbde", { name: "巴萨拉卡", color: rgb(78, 52, 46) }],
-  ["8056abcd", { name: "伊德", color: rgb(21, 28, 100) }],
-  ["121d9d67", { name: "奥义连锁", color: "#444" }],
+const actorMap = new Map([
+  ["PL0000", { name: "古兰", color: rgb(107, 211, 105) }],
+  ["PL0100", { name: "姬塔", color: rgb(105, 211, 166) }],
+  ["PL0200", { name: "卡塔莉娜", color: rgb(82, 126, 179) }],
+  ["PL0300", { name: "拉卡姆", color: rgb(216, 87, 32) }],
+  ["PL0400", { name: "伊欧", color: rgb(216, 126, 54) }],
+  ["PL0500", { name: "欧根", color: rgb(121, 85, 72) }],
+  ["PL0600", { name: "萝赛塔", color: rgb(188, 100, 200) }],
+  ["PL0700", { name: "菲莉", color: rgb(216, 185, 40) }],
+  ["PL0800", { name: "兰斯洛特", color: rgb(71, 147, 204) }],
+  ["PL0900", { name: "巴恩", color: rgb(45, 55, 153) }],
+  ["PL1000", { name: "珀西瓦尔", color: rgb(204, 2, 0) }],
+  ["PL1100", { name: "齐格飞", color: rgb(0, 185, 247) }],
+  ["PL1200", { name: "夏洛特", color: rgb(254, 179, 0) }],
+  ["PL1300", { name: "尤达拉哈", color: rgb(105, 191, 211) }],
+  ["PL1400", { name: "娜露梅", color: rgb(178, 33, 144) }],
+  ["PL1500", { name: "冈达葛萨", color: rgb(136, 14, 79) }],
+  ["PL1600", { name: "塞达", color: rgb(204, 71, 61) }],
+  ["PL1800", { name: "卡莉奥丝特罗", color: rgb(255, 202, 40) }],
+  ["PL1700", { name: "巴萨拉卡", color: rgb(111, 16, 165) }],
+  ["PL1900", { name: "伊德", color: rgb(72, 56, 166) }],
 ]);
 
 const style = {
@@ -154,7 +153,7 @@ onMounted(() => {
     // update yAxis
     if (lastActorNames !== data.actors.join("/")) {
       const names = data.actors.map((v) => {
-        let name = actorConfigMap.get(v.hexId)?.name ?? v.hexId;
+        let name = actorMap.get(v.type.toUpperCase())?.name ?? v.hexId;
         if (
           data.actors.find(
             (d) => d.partyIdx !== v.partyIdx && d.hexId === v.hexId,
@@ -197,8 +196,8 @@ onMounted(() => {
           itemStyle: {
             color: (params: any) => {
               try {
-                const hexId = data.actors[params!.dataIndex].hexId;
-                return actorConfigMap.get(hexId)?.color ?? "";
+                const key = data.actors[params!.dataIndex].type;
+                return actorMap.get(key.toUpperCase())?.color ?? "";
               } catch {
                 return "";
               }
