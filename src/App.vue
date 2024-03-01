@@ -1,5 +1,56 @@
 <script setup lang="ts">
-import * as echarts from "echarts";
+import { BarChart, LineChart } from "echarts/charts";
+import type {
+  // 系列类型的定义后缀都为 SeriesOption
+  BarSeriesOption,
+  LineSeriesOption,
+} from "echarts/charts";
+import {
+  // 数据集组件
+  DatasetComponent,
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+  // 内置数据转换器组件 (filter, sort)
+  TransformComponent,
+} from "echarts/components";
+import type {
+  DatasetComponentOption,
+  GridComponentOption,
+  // 组件类型的定义后缀都为 ComponentOption
+  TitleComponentOption,
+  TooltipComponentOption,
+} from "echarts/components";
+import * as echarts from "echarts/core";
+import type { ComposeOption } from "echarts/core";
+import { LabelLayout, UniversalTransition } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
+
+// 通过 ComposeOption 来组合出一个只有必须组件和图表的 Option 类型
+type ECOption = ComposeOption<
+  | BarSeriesOption
+  | LineSeriesOption
+  | TitleComponentOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | DatasetComponentOption
+>;
+
+// 注册必须的组件
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  DatasetComponent,
+  TransformComponent,
+  BarChart,
+  LineChart,
+  LabelLayout,
+  LegendComponent,
+  UniversalTransition,
+  CanvasRenderer,
+]);
 import { GbfrActWs } from "gbfr-act-ws-package";
 import { onMounted, ref } from "vue";
 
@@ -70,7 +121,7 @@ onMounted(() => {
     },
   );
 
-  const option: echarts.EChartsOption = {
+  const option: ECOption = {
     backgroundColor: style.backgroundColor,
     grid: {
       top: showTitle ? 25 : 5,
@@ -166,7 +217,7 @@ onMounted(() => {
       });
       const left = style.names.margin + style.bleed
         + names.reduce((max, name) => Math.max(getTextSize(name, style.names).width, max), 0);
-      chartBox.setOption<echarts.EChartsOption>({ grid: { left }, yAxis: { data: names } });
+      chartBox.setOption<ECOption>({ grid: { left }, yAxis: { data: names } });
     }
 
     lastActorNames = data.actors.join("/");
@@ -175,7 +226,7 @@ onMounted(() => {
       + getTextSize(data.actors.reduce((max, actor) => Math.max(max, actor.damage), 0).toLocaleString(), style.damages)
         .width;
 
-    chartBox.setOption<echarts.EChartsOption>({
+    chartBox.setOption<ECOption>({
       grid: { right },
       title: {
         show: showTitle,
